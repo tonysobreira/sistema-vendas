@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.sistema.vendas.model.Pedido;
+import br.com.sistema.vendas.model.PedidoItem;
 import br.com.sistema.vendas.repository.PedidoRepository;
 
 @RestController
@@ -29,8 +30,16 @@ public class PedidoController {
 		if (pedido.getId() == null || pedido.getId().isEmpty()) {
 			pedido.setId(UUID.randomUUID().toString());
 		}
+		
+		Pedido p = pedidoRepository.save(pedido);
+		
+		for (PedidoItem item : p.getItens()) {
+			item.setPedido(p);
+		}
+		
+		p = pedidoRepository.save(p);
 
-		return ResponseEntity.ok(pedidoRepository.save(pedido));
+		return ResponseEntity.ok(p);
 	}
 
 	@GetMapping
